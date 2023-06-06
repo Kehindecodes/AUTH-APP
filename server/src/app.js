@@ -1,13 +1,13 @@
 const express = require('express');
-const app = express();
+const passport = require('passport');
 const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
+const strategy = require('./passport-config');
 
-// app.use(
-// 	cors({
-// 		origin: 'http://localhost:3000',
-// 	}),
-// );
+const app = express();
+// Passport middleware setup
+app.use(passport.initialize());
+passport.use(strategy);
 // app.use(morgan('combined'));
 app.use(express.json());
 // serve a static file
@@ -18,7 +18,14 @@ app.use(express.json());
 app.use('/register', registerUserRouter);
 app.use('/login', loginUserRouter);
 // app.use('/launches', launchesRouter);
-
+app.get(
+	'/protected-route',
+	passport.authenticate('jwt', { session: false }),
+	(req, res) => {
+		// Access is granted if the authentication is successful
+		res.json({ message: 'Access granted!' });
+	},
+);
 app.get('/', (req, res) => {
 	// res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 	res.send('welcome to the auth app wow');
