@@ -4,7 +4,12 @@ async function loginUser(req, res) {
 	try {
 		const { email, password } = req.body;
 
-		// Check if a user with the provided email already exists
+		// Check if username and password is provided
+		if (!email || !password) {
+			return res.status(400).json({
+				message: 'email or Password not present',
+			});
+		}
 		const user = await User.findOne({ email, password });
 		if (!user) {
 			return res.status(401).json({ error: 'user not found' });
