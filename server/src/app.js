@@ -1,8 +1,7 @@
 const express = require('express');
-// const cors = require('cors');
-// const morgan = require('morgan');
-
 const app = express();
+const registerUserRouter = require('./routes/register/register.route');
+const loginUserRouter = require('./routes/login/login.route');
 
 // app.use(
 // 	cors({
@@ -16,7 +15,8 @@ app.use(express.json());
 
 // app.use('/v1', api);
 // routes
-// app.use('/planets', planetsRouter);
+app.use('/register', registerUserRouter);
+app.use('/login', loginUserRouter);
 // app.use('/launches', launchesRouter);
 
 app.get('/', (req, res) => {
