@@ -1,4 +1,5 @@
 const User = require('../../models/User');
+const bcrypt = require('bcryptjs');
 
 async function registerUser(req, res) {
 	try {
@@ -10,12 +11,16 @@ async function registerUser(req, res) {
 			return res.status(409).json({ error: 'Email already exists' });
 		}
 
-		// Create a new user
-		const user = new User({ name, email, password });
+		const salt = await bcrypt.genSalt(10);
+		const hash = await bcrypt.hash(password, salt);
+
+		const user = new User({ name, email, password: hash });
 		await user.save();
 
-		// Return the newly created user
-		res.status(201).json(user);
+		res.status(201).json({
+			message: 'User successfully created',
+			user,
+		});
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Internal Server Error' });
