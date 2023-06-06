@@ -1,23 +1,37 @@
 const User = require('../../models/User');
+const bcrypt = require('bcryptjs');
 
 async function loginUser(req, res) {
 	try {
 		const { email, password } = req.body;
 
-		// Check if username and password is provided
+		// Check if email and password are provided
 		if (!email || !password) {
 			return res.status(400).json({
-				message: 'email or Password not present',
+				message: 'Email or password not present',
 			});
 		}
-		const user = await User.findOne({ email, password });
+
+		const user = await User.findOne({ email });
 		if (!user) {
-			return res.status(401).json({ error: 'user not found' });
+			return res.status(401).json({
+				error: 'User not found',
+				message: 'Login not successful',
+			});
 		}
-		// Return the newly created user
-		res.status(201).json({
-			message: 'login successully',
-			user,
+
+		bcrypt.compare(password, user.password, function (err, result) {
+			if (result) {
+				return res.status(200).json({
+					message: 'Login successful',
+					user,
+				});
+			} else {
+				return res.status(401).json({
+					message: 'Login not successful',
+					error: err,
+				});
+			}
 		});
 	} catch (error) {
 		console.error(error);
