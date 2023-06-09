@@ -41,10 +41,6 @@ app.use(passport.session());
 // serve a static file
 // app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// // app.use('/v1', api);
-// app.use('/auth/register', registerUserRouter);
-// app.use('/auth/login', loginUserRouter);
-
 function checkLoggedIn(req, res, next) {
 	// check if user is authenticated
 	console.log(req.user);
@@ -63,7 +59,10 @@ app.use('/auth/login', loginUserRouter);
 
 app.get(
 	'/dashboard',
-	passport.authenticate('jwt', { session: false }),
+	passport.authenticate('jwt', {
+		session: false,
+		failureRedirect: '/auth/login',
+	}),
 	(req, res) => {
 		res.send(`welcome to your dashboard`);
 	},
