@@ -6,6 +6,8 @@ const { Strategy, ExtractJwt } = passportJWT;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const GitHubStrategy = require('passport-github').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+
 const options = {
 	secretOrKey: process.env.JWT_SECRET_KEY,
 	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -50,7 +52,7 @@ const gitHubStrategy = new GitHubStrategy(
 	{
 		clientID: process.env.GITHUB_CLIENT_ID,
 		clientSecret: process.env.GITHUB_CLIENT_SECRET,
-		callbackURL: 'http://localhost:8080/auth/github/callback',
+		callbackURL: '/auth/github/callback',
 	},
 	(accessToken, refreshToken, profile, done) => {
 		console.log('Google profile', profile);
@@ -58,4 +60,24 @@ const gitHubStrategy = new GitHubStrategy(
 	},
 );
 
-module.exports = { strategy, googleStrategy, gitHubStrategy };
+const facebookStrategy = new FacebookStrategy(
+	{
+		clientID: process.env.FB_APP_ID,
+		clientSecret: process.env.FB_APP_SECRET,
+		callbackURL: '/auth/facebook/callback',
+		profileFields: ['id', 'displayName', 'email'],
+	},
+	function (accessToken, refreshToken, profile, done) {
+		console.log(`facebook user:${profile}`);
+		// Handle the user profile data returned by Facebook
+		// and create or authenticate the user in your system
+		// You can access the user profile data using `profile` object
+		// Call `done` with the user object or an error if something goes wrong
+		// For example:
+		// User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+		//   return done(err, user);
+		// });
+		done(null, profile);
+	},
+);
+module.exports = { strategy, googleStrategy, gitHubStrategy, facebookStrategy };

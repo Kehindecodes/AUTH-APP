@@ -11,12 +11,14 @@ const {
 	strategy,
 	googleStrategy,
 	gitHubStrategy,
+	facebookStrategy,
 } = require('./passport-config');
 require('dotenv').config();
 
 passport.use(strategy);
 passport.use(googleStrategy);
 passport.use(gitHubStrategy);
+passport.use(facebookStrategy);
 
 // save the session to the cookie
 passport.serializeUser((user, done) => {
