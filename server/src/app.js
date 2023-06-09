@@ -7,11 +7,16 @@ const session = require('express-session');
 const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
 const authRoutes = require('./routes/auth');
-const { strategy, googleStrategy } = require('./passport-config');
+const {
+	strategy,
+	googleStrategy,
+	gitHubStrategy,
+} = require('./passport-config');
 require('dotenv').config();
 
 passport.use(strategy);
 passport.use(googleStrategy);
+passport.use(gitHubStrategy);
 
 // save the session to the cookie
 passport.serializeUser((user, done) => {
@@ -38,7 +43,7 @@ const app = express();
 // );
 app.use(
 	session({
-		secret: 'your-secret-key',
+		secret: process.env.COOKIE_KEY_1,
 		resave: false,
 		saveUninitialized: false,
 	}),
@@ -69,7 +74,7 @@ app.use('/auth/login', loginUserRouter);
 app.use('/auth', authRoutes);
 
 app.get('/dashboard', checkLoggedIn, (req, res) => {
-	res.send(`welcome ${req.body.name}`);
+	res.send(`welcome to your dashboard`);
 });
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
