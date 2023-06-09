@@ -2,13 +2,16 @@ const express = require('express');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
 const path = require('path');
+const session = require('express-session');
 // const cookieParser = require('cookie-parser');
 const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
-const strategy = require('./passport-config');
+const authRoutes = require('./routes/auth');
+const { strategy, googleStrategy } = require('./passport-config');
 require('dotenv').config();
 
 passport.use(strategy);
+passport.use(googleStrategy);
 
 // save the session to the cookie
 passport.serializeUser((user, done) => {
@@ -25,12 +28,19 @@ passport.deserializeUser((user, done) => {
 const app = express();
 
 // app.use(cookieParser());
+// app.use(
+// 	cookieSession({
+// 		name: 'session',
+// 		maxAge: 24 * 60 * 60 * 1000,
+// 		// sign cookies with these keys
+// 		keys: [process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2],
+// 	}),
+// );
 app.use(
-	cookieSession({
-		name: 'session',
-		maxAge: 24 * 60 * 60 * 1000,
-		// sign cookies with these keys
-		keys: [process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2],
+	session({
+		secret: 'your-secret-key',
+		resave: false,
+		saveUninitialized: false,
 	}),
 );
 app.use(express.json());
@@ -56,17 +66,14 @@ function checkLoggedIn(req, res, next) {
 // routes
 app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
+app.use('/auth', authRoutes);
 
-app.get(
-	'/dashboard',
-	passport.authenticate('jwt', {
-		session: false,
-		failureRedirect: '/auth/login',
-	}),
-	(req, res) => {
-		res.send(`welcome to your dashboard`);
-	},
-);
+app.get('/dashboard', checkLoggedIn, (req, res) => {
+	res.send(`welcome ${req.body.name}`);
+});
+app.get('/failure', (req, res) => {
+	return res.send('failed to log in!');
+});
 app.get('/', (req, res) => {
 	// res.send('I dey work jare');
 	res.sendFile(path.join(__dirname, '../public', 'index.html'));
