@@ -34,15 +34,6 @@ passport.deserializeUser((user, done) => {
 });
 const app = express();
 
-// app.use(cookieParser());
-// app.use(
-// 	cookieSession({
-// 		name: 'session',
-// 		maxAge: 24 * 60 * 60 * 1000,
-// 		// sign cookies with these keys
-// 		keys: [process.env.COOKIE_KEY_1, process.env.COOKIE_KEY_2],
-// 	}),
-// );
 app.use(
 	session({
 		secret: process.env.COOKIE_KEY_1,
@@ -80,6 +71,19 @@ app.get('/dashboard', checkLoggedIn, (req, res) => {
 });
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
+});
+app.get('/logout', (req, res) => {
+	return res.send('you are logged out');
+});
+
+app.get('/auth/logout', (req, res) => {
+	req.logout(function (err) {
+		if (err) {
+			// Handle any potential errors
+			console.error(err);
+		}
+		res.redirect('/logout');
+	});
 });
 app.get('/', (req, res) => {
 	// res.send('I dey work jare');
