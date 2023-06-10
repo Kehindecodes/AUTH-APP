@@ -1,5 +1,6 @@
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
+const bcrypt = require('bcryptjs');
 const User = require('./models/User');
 require('dotenv').config();
 const { Strategy, ExtractJwt } = passportJWT;
@@ -32,18 +33,51 @@ const strategy = new Strategy(options, (payload, done) => {
 
 function verifyCallback(accessToken, refreshToken, profile, done) {
 	console.log('Google profile', profile);
-	// Generate JWT token
-	// const payload = {
-	// 	sub: profile.id,
-	// 	email: profile.emails[0].value,
-	// 	// Add any other relevant user data to the payload
-	// };
+	const { id, displayName, emails, photos } = profile;
+	// Check if the user already exists in the database
+	User.findOne({ email: emails[0].value })
+		.then((existingUser) => {
+			if (existingUser) {
+				// User already exists, return the existing user
+				return done(null, existingUser);
+			} else {
+				// Generate a random password
+				const randomPassword = Math.random().toString(36).slice(-8);
 
-	// const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-	// 	expiresIn: '1h',
-	// });
-	done(null, profile);
-	// return token;
+				// Hash the password using bcrypt
+				bcrypt.hash(randomPassword, 10, (err, hashedPassword) => {
+					if (err) {
+						// Handle hashing error
+						return done(err, false);
+					}
+
+					// Create a new user document
+					const newUser = new User({
+						id: id,
+						name: displayName,
+						email: emails[0].value,
+						password: hashedPassword,
+						profileImage: photos[0]?.value, // Optional: Save profile picture URL
+					});
+
+					// Save the user document to the database
+					newUser
+						.save()
+						.then((user) => {
+							// Handle successful save
+							done(null, user);
+						})
+						.catch((err) => {
+							// Handle save error
+							done(err, false);
+						});
+				});
+			}
+		})
+		.catch((err) => {
+			// Handle database query error
+			done(err, false);
+		});
 }
 
 const googleStrategy = new GoogleStrategy(GOOGLE_AUTH_OPTIONS, verifyCallback);
