@@ -30,12 +30,12 @@ const strategy = new Strategy(options, (payload, done) => {
 		})
 		.catch((err) => done(err, false));
 });
-
-function verifyCallback(accessToken, refreshToken, profile, done) {
-	console.log('Google profile', profile);
+// Function to handle social login strategy
+function handleSocialLogin(accessToken, refreshToken, profile, done) {
+	console.log('profile', profile);
 	const { id, displayName, emails, photos } = profile;
 	// Check if the user already exists in the database
-	User.findOne({ email: emails[0].value })
+	User.findOne({ id: id })
 		.then((existingUser) => {
 			if (existingUser) {
 				// User already exists, return the existing user
@@ -80,7 +80,10 @@ function verifyCallback(accessToken, refreshToken, profile, done) {
 		});
 }
 
-const googleStrategy = new GoogleStrategy(GOOGLE_AUTH_OPTIONS, verifyCallback);
+const googleStrategy = new GoogleStrategy(
+	GOOGLE_AUTH_OPTIONS,
+	handleSocialLogin,
+);
 
 const gitHubStrategy = new GitHubStrategy(
 	{
@@ -88,10 +91,7 @@ const gitHubStrategy = new GitHubStrategy(
 		clientSecret: process.env.GITHUB_CLIENT_SECRET,
 		callbackURL: '/auth/github/callback',
 	},
-	(accessToken, refreshToken, profile, done) => {
-		console.log('Google profile', profile);
-		done(null, profile);
-	},
+	handleSocialLogin,
 );
 
 const facebookStrategy = new FacebookStrategy(
@@ -99,19 +99,54 @@ const facebookStrategy = new FacebookStrategy(
 		clientID: process.env.FB_APP_ID,
 		clientSecret: process.env.FB_APP_SECRET,
 		callbackURL: '/auth/facebook/callback',
-		profileFields: ['id', 'displayName', 'email'],
+		profileFields: ['id', 'displayName', 'email', 'profileUrl'],
 	},
 	function (accessToken, refreshToken, profile, done) {
-		console.log(`facebook user:${profile}`);
-		// Handle the user profile data returned by Facebook
-		// and create or authenticate the user in your system
-		// You can access the user profile data using `profile` object
-		// Call `done` with the user object or an error if something goes wrong
-		// For example:
-		// User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-		//   return done(err, user);
-		// });
-		done(null, profile);
+		console.log(' facebook profile', profile);
+		const { id, displayName, profileUrl } = profile;
+		// Check if the user already exists in the database
+		User.findOne({ id: id })
+			.then((existingUser) => {
+				if (existingUser) {
+					// User already exists, return the existing user
+					return done(null, existingUser);
+				} else {
+					// Generate a random password
+					const randomPassword = Math.random().toString(36).slice(-8);
+
+					// Hash the password using bcrypt
+					bcrypt.hash(randomPassword, 10, (err, hashedPassword) => {
+						if (err) {
+							// Handle hashing error
+							return done(err, false);
+						}
+
+						// Create a new user document
+						const newUser = new User({
+							id: id,
+							name: displayName,
+							password: hashedPassword,
+							// Optional: Save profile picture URL
+						});
+
+						// Save the user document to the database
+						newUser
+							.save()
+							.then((user) => {
+								// Handle successful save
+								done(null, user);
+							})
+							.catch((err) => {
+								// Handle save error
+								done(err, false);
+							});
+					});
+				}
+			})
+			.catch((err) => {
+				// Handle database query error
+				done(err, false);
+			});
 	},
 );
 module.exports = { strategy, googleStrategy, gitHubStrategy, facebookStrategy };
