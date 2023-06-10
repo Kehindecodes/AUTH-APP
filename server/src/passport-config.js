@@ -91,19 +91,9 @@ const gitHubStrategy = new GitHubStrategy(
 		clientSecret: process.env.GITHUB_CLIENT_SECRET,
 		callbackURL: '/auth/github/callback',
 	},
-	handleSocialLogin,
-);
-
-const facebookStrategy = new FacebookStrategy(
-	{
-		clientID: process.env.FB_APP_ID,
-		clientSecret: process.env.FB_APP_SECRET,
-		callbackURL: '/auth/facebook/callback',
-		profileFields: ['id', 'displayName', 'email', 'profileUrl'],
-	},
 	function (accessToken, refreshToken, profile, done) {
-		console.log(' facebook profile', profile);
-		const { id, displayName, profileUrl } = profile;
+		console.log(' github profile', profile);
+		const { id, name, avatar_url, bio } = profile;
 		// Check if the user already exists in the database
 		User.findOne({ id: id })
 			.then((existingUser) => {
@@ -124,8 +114,10 @@ const facebookStrategy = new FacebookStrategy(
 						// Create a new user document
 						const newUser = new User({
 							id: id,
-							name: displayName,
+							name: name,
 							password: hashedPassword,
+							profileImage: avatar_url,
+							bio: bio,
 							// Optional: Save profile picture URL
 						});
 
@@ -148,5 +140,16 @@ const facebookStrategy = new FacebookStrategy(
 				done(err, false);
 			});
 	},
+);
+
+const facebookStrategy = new FacebookStrategy(
+	{
+		clientID: process.env.FB_APP_ID,
+		clientSecret: process.env.FB_APP_SECRET,
+		callbackURL: '/auth/facebook/callback',
+		profileFields: ['id', 'displayName', 'email', 'picture'],
+		scope: ['email'],
+	},
+	handleSocialLogin,
 );
 module.exports = { strategy, googleStrategy, gitHubStrategy, facebookStrategy };
