@@ -3,10 +3,12 @@ const passport = require('passport');
 const cookieSession = require('cookie-session');
 const path = require('path');
 const session = require('express-session');
+const jwt = require('jsonwebtoken');
 // const cookieParser = require('cookie-parser');
 const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
 const authRoutes = require('./routes/auth');
+const editProfileRouter = require('./routes/profile/profile.router');
 const {
 	strategy,
 	googleStrategy,
@@ -14,7 +16,7 @@ const {
 	facebookStrategy,
 } = require('./passport-config');
 require('dotenv').config();
-
+const secretKey = process.env.JWT_SECRET_KEY;
 passport.use(strategy);
 passport.use(googleStrategy);
 passport.use(gitHubStrategy);
@@ -34,6 +36,7 @@ passport.deserializeUser((user, done) => {
 });
 const app = express();
 
+app.use(express.json());
 app.use(
 	session({
 		secret: process.env.COOKIE_KEY_1,
@@ -41,9 +44,9 @@ app.use(
 		saveUninitialized: false,
 	}),
 );
-app.use(express.json());
 // Passport middleware setup
 app.use(passport.initialize());
+
 app.use(passport.session());
 
 // serve a static file
@@ -61,14 +64,55 @@ function checkLoggedIn(req, res, next) {
 	}
 	next();
 }
+
+function checkLoggedInWithToken(req, res, next) {
+	// Check if the JWT token is present
+	const token = req.headers.authorization;
+	console.log(token);
+	if (!token) {
+		return res.status(401).json({ error: 'You must log in' });
+	}
+
+	try {
+		// Verify and decode the JWT token
+		const decoded = jwt.verify(token, secretKey);
+		// Assuming the JWT payload contains the user ID
+		const userId = decoded.sub;
+
+		console.log(decoded);
+		// Initialize req.user as an object and attach the user ID
+		req.user = { id: userId };
+
+		// Continue to the next middleware or route handler
+		next();
+	} catch (error) {
+		// Handle invalid JWT or expired token
+		return res.status(401).json({ error: 'Invalid or expired token' });
+	}
+}
+function ensureAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) {
+		return next();
+	}
+	res.status(401).json({ error: 'Unauthorized' });
+}
 // routes
 app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
 app.use('/auth', authRoutes);
+app.use(
+	'/dashboard/profile',
+	passport.authenticate('jwt', { session: false }),
+	editProfileRouter,
+);
+app.get(
+	'/dashboard',
+	passport.authenticate('jwt', { session: false }),
+	(req, res) => {
+		res.send(`welcome ${req.user.name}`);
+	},
+);
 
-app.get('/dashboard', checkLoggedIn, (req, res) => {
-	res.send(`welcome to your dashboard`);
-});
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
 });
