@@ -9,6 +9,7 @@ const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
 const authRoutes = require('./routes/auth');
 const editProfileRouter = require('./routes/profile/profile.router');
+
 const {
 	strategy,
 	googleStrategy,
@@ -35,7 +36,8 @@ passport.deserializeUser((user, done) => {
 	done(null, user);
 });
 const app = express();
-
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(
 	session({
@@ -52,18 +54,18 @@ app.use(passport.session());
 // serve a static file
 // app.use(express.static(path.join(__dirname, '..', 'public')));
 
-function checkLoggedIn(req, res, next) {
-	// check if user is authenticated
-	console.log(req.user);
-	const isLoggedIn = req.isAuthenticated() && req.user;
+// function checkLoggedIn(req, res, next) {
+// 	// check if user is authenticated
+// 	console.log(req.user);
+// 	const isLoggedIn = req.isAuthenticated() && req.user;
 
-	if (!isLoggedIn) {
-		return res.status(401).json({
-			error: 'You must log in',
-		});
-	}
-	next();
-}
+// 	if (!isLoggedIn) {
+// 		return res.status(401).json({
+// 			error: 'You must log in',
+// 		});
+// 	}
+// 	next();
+// }
 
 // function ensureAuthenticated(req, res, next) {
 // 	passport.authenticate('jwt', {
@@ -84,13 +86,10 @@ function ensureAuthenticated(req, res, next) {
 app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
 app.use('/auth', authRoutes);
-app.use(
-	'/dashboard/profile',
-	passport.authenticate('jwt', { session: false }),
-	editProfileRouter,
-);
-app.get('/dashboard', ensureAuthenticated, (req, res) => {
+app.use('/profile/edit', ensureAuthenticated, editProfileRouter);
+app.get('/profile', ensureAuthenticated, (req, res) => {
 	res.send(`welcome ${req.user.name}`);
+	console.log(req.user._id);
 });
 
 app.get('/failure', (req, res) => {
@@ -111,6 +110,7 @@ app.get('/auth/logout', (req, res) => {
 });
 app.get('/', (req, res) => {
 	// res.send('I dey work jare');
-	res.sendFile(path.join(__dirname, '../public', 'index.html'));
+	// res.sendFile(path.join(__dirname, '../public', 'index.html'));
+	res.render('index', { title: 'auth App', user: req.user });
 });
 module.exports = app;

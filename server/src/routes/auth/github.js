@@ -8,7 +8,7 @@ githubRouter.get('/', passport.authenticate('github'));
 githubRouter.get(
 	'/callback',
 	passport.authenticate('github', {
-		successRedirect: '/dashboard',
+		successRedirect: '/profile',
 		failureRedirect: '/failure',
 		session: true,
 	}),

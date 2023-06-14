@@ -8,8 +8,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const GitHubStrategy = require('passport-github').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
-const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Types;
 
 const options = {
 	secretOrKey: process.env.JWT_SECRET_KEY,
@@ -35,6 +33,7 @@ const strategy = new Strategy(options, (payload, done) => {
 // Function to handle social login strategy
 function handleSocialLogin(accessToken, refreshToken, profile, done) {
 	console.log('profile', profile);
+	console.log('your access  token:', accessToken);
 	const { id, displayName, emails, photos } = profile;
 	// Check if the user already exists in the database
 	User.findOne({ _id: id })

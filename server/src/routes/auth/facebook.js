@@ -9,7 +9,7 @@ facebookRouter.get('/', passport.authenticate('facebook'));
 facebookRouter.get(
 	'/callback',
 	passport.authenticate('facebook', {
-		successRedirect: '/dashboard',
+		successRedirect: '/profile',
 		failureRedirect: '/failure',
 	}),
 );

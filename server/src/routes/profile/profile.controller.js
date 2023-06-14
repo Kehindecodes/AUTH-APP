@@ -1,24 +1,20 @@
 const User = require('../../models/User');
-const bcrypt = require('bcryptjs');
 
 async function editProfile(req, res, next) {
 	try {
 		const userId = req.user._id; // Assuming you have implemented user authentication and have access to the user ID
-		const { name, bio, phone, email, password } = req.body;
+		const { name, bio, phone, email } = req.body;
 
 		// Find the user by ID
 		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({ error: 'User not found' });
 		}
-		const salt = await bcrypt.genSalt(10);
-		const hash = await bcrypt.hash(password, salt);
 		// Update the user profile fields
 		user.name = name || user.name;
 		user.bio = bio || user.bio;
 		user.phone = phone || user.phone;
 		user.email = email || user.email;
-		user.password = password || user.hash;
 
 		// Save the updated user
 		await user.save();

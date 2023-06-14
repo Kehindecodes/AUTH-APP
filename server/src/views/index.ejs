@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+</head>
+<body>
+  <h1>Welcome to <%= title %></h1>
+  <% if (!user) { %>
+    <p>Please <a href="/auth/login">log in</a> or <a href="/auth/register">sign up</a> to check your profile.</p>
+  <% } else { %>
+    <p>Logged in as: <%= user.username %></p>
+    <p><a href="/profile">Go to your profile</a></p>
+  <% } %>
+</body>
+</html>

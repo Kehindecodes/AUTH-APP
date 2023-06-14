@@ -15,7 +15,7 @@ googleRouter.get(
 	'/callback',
 	passport.authenticate('google', {
 		failureRedirect: '/failure',
-		successRedirect: '/dashboard',
+		successRedirect: '/profile',
 		session: true,
 	}),
 	(req, res) => {
