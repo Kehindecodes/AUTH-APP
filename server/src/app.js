@@ -65,37 +65,21 @@ function checkLoggedIn(req, res, next) {
 	next();
 }
 
-function checkLoggedInWithToken(req, res, next) {
-	// Check if the JWT token is present
-	const token = req.headers.authorization;
-	console.log(token);
-	if (!token) {
-		return res.status(401).json({ error: 'You must log in' });
-	}
-
-	try {
-		// Verify and decode the JWT token
-		const decoded = jwt.verify(token, secretKey);
-		// Assuming the JWT payload contains the user ID
-		const userId = decoded.sub;
-
-		console.log(decoded);
-		// Initialize req.user as an object and attach the user ID
-		req.user = { id: userId };
-
-		// Continue to the next middleware or route handler
-		next();
-	} catch (error) {
-		// Handle invalid JWT or expired token
-		return res.status(401).json({ error: 'Invalid or expired token' });
-	}
-}
+// function ensureAuthenticated(req, res, next) {
+// 	passport.authenticate('jwt', {
+// 		session: false,
+// 	})(req, res, next);
+// }
 function ensureAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {
 		return next();
+	} else {
+		passport.authenticate('jwt', {
+			session: false,
+		})(req, res, next);
 	}
-	res.status(401).json({ error: 'Unauthorized' });
 }
+
 // routes
 app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
@@ -105,13 +89,9 @@ app.use(
 	passport.authenticate('jwt', { session: false }),
 	editProfileRouter,
 );
-app.get(
-	'/dashboard',
-	passport.authenticate('jwt', { session: false }),
-	(req, res) => {
-		res.send(`welcome ${req.user.name}`);
-	},
-);
+app.get('/dashboard', ensureAuthenticated, (req, res) => {
+	res.send(`welcome ${req.user.name}`);
+});
 
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');

@@ -16,7 +16,16 @@ async function registerUser(req, res) {
 		const salt = await bcrypt.genSalt(10);
 		const hash = await bcrypt.hash(password, salt);
 
-		const user = new User({ name, email, password: hash });
+		function generateRandomId() {
+			const randomId = Math.floor(Math.random() * 1000000); // Adjust the range as needed
+			return randomId;
+		}
+		const user = new User({
+			_id: generateRandomId(),
+			name,
+			email,
+			password: hash,
+		});
 		const payload = { sub: user._id };
 		const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
 			expiresIn: '1h',

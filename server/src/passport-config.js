@@ -8,6 +8,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const GitHubStrategy = require('passport-github').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
 
 const options = {
 	secretOrKey: process.env.JWT_SECRET_KEY,
@@ -35,7 +37,7 @@ function handleSocialLogin(accessToken, refreshToken, profile, done) {
 	console.log('profile', profile);
 	const { id, displayName, emails, photos } = profile;
 	// Check if the user already exists in the database
-	User.findOne({ id: id })
+	User.findOne({ _id: id })
 		.then((existingUser) => {
 			if (existingUser) {
 				// User already exists, return the existing user
@@ -53,7 +55,7 @@ function handleSocialLogin(accessToken, refreshToken, profile, done) {
 
 					// Create a new user document
 					const newUser = new User({
-						id: id,
+						_id: id,
 						name: displayName,
 						email: emails[0].value,
 						password: hashedPassword,
@@ -93,9 +95,10 @@ const gitHubStrategy = new GitHubStrategy(
 	},
 	function (accessToken, refreshToken, profile, done) {
 		console.log(' github profile', profile);
-		const { id, name, avatar_url, bio } = profile;
+		console.log('your access  token:', accessToken);
+		const { id, name, avatar_url, bio } = profile._json;
 		// Check if the user already exists in the database
-		User.findOne({ id: id })
+		User.findOne({ _id: id })
 			.then((existingUser) => {
 				if (existingUser) {
 					// User already exists, return the existing user
@@ -113,7 +116,7 @@ const gitHubStrategy = new GitHubStrategy(
 
 						// Create a new user document
 						const newUser = new User({
-							id: id,
+							_id: id,
 							name: name,
 							password: hashedPassword,
 							profileImage: avatar_url,

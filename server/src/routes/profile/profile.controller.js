@@ -1,4 +1,5 @@
 const User = require('../../models/User');
+const bcrypt = require('bcryptjs');
 
 async function editProfile(req, res, next) {
 	try {
@@ -10,13 +11,14 @@ async function editProfile(req, res, next) {
 		if (!user) {
 			return res.status(404).json({ error: 'User not found' });
 		}
-
+		const salt = await bcrypt.genSalt(10);
+		const hash = await bcrypt.hash(password, salt);
 		// Update the user profile fields
 		user.name = name || user.name;
 		user.bio = bio || user.bio;
 		user.phone = phone || user.phone;
 		user.email = email || user.email;
-		user.password = password || user.password;
+		user.password = password || user.hash;
 
 		// Save the updated user
 		await user.save();
