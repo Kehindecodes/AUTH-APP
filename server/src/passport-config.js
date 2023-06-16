@@ -20,6 +20,36 @@ const GOOGLE_AUTH_OPTIONS = {
 	scope: ['profile', 'email'],
 };
 
+const localStrategy = new LocalStrategy(
+	{
+		usernameField: 'email',
+		passwordField: 'password',
+	},
+	async (email, password, done) => {
+		try {
+			const user = await User.findOne({ email });
+
+			if (!user) {
+				return done(null, false, {
+					message: 'User not found',
+				});
+			}
+
+			const isPasswordValid = await bcrypt.compare(password, user.password);
+
+			if (!isPasswordValid) {
+				return done(null, false, {
+					message: 'Incorrect password',
+				});
+			}
+
+			return done(null, user);
+		} catch (error) {
+			return done(error);
+		}
+	},
+);
+
 const strategy = new Strategy(options, (payload, done) => {
 	User.findById(payload.sub)
 		.then((user) => {
@@ -154,4 +184,10 @@ const facebookStrategy = new FacebookStrategy(
 	},
 	handleSocialLogin,
 );
-module.exports = { strategy, googleStrategy, gitHubStrategy, facebookStrategy };
+module.exports = {
+	localStrategy,
+	strategy,
+	googleStrategy,
+	gitHubStrategy,
+	facebookStrategy,
+};
