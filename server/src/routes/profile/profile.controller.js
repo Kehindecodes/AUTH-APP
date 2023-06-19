@@ -19,7 +19,8 @@ async function editProfile(req, res, next) {
 		// Save the updated user
 		await user.save();
 
-		res.status(200).json({ message: 'Profile updated successfully', user });
+		res.redirect('/profile');
+		console.log(user);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Internal Server Error' });

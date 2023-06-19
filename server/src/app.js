@@ -15,9 +15,12 @@ const {
 	googleStrategy,
 	gitHubStrategy,
 	facebookStrategy,
+	localStrategy,
 } = require('./passport-config');
 require('dotenv').config();
 const secretKey = process.env.JWT_SECRET_KEY;
+
+passport.use(localStrategy);
 passport.use(strategy);
 passport.use(googleStrategy);
 passport.use(gitHubStrategy);
@@ -46,6 +49,7 @@ app.use(
 		saveUninitialized: false,
 	}),
 );
+app.use(express.urlencoded({ extended: false }));
 // Passport middleware setup
 app.use(passport.initialize());
 
@@ -68,17 +72,46 @@ app.use(passport.session());
 // }
 
 // function ensureAuthenticated(req, res, next) {
-// 	passport.authenticate('jwt', {
-// 		session: false,
-// 	})(req, res, next);
+// 	if (req.isAuthenticated()) {
+// 		return next();
+// 	} else {
+// 		passport.authenticate('jwt', {
+// 			session: false,
+// 		})(req, res, next);
+// 	}
 // }
+const verifyToken = (req, res, next) => {
+	// Retrieve the token from the server-side variable
+	const token = req.session.token;
+	console.log(token);
+
+	if (!token) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+
+	try {
+		// Verify and decode the token
+		const decodedToken = jwt.verify(token, secretKey);
+
+		// Attach the decoded token to the request object
+		req.user = decodedToken;
+
+		next();
+	} catch (err) {
+		// Handle any error that occurs during token verification
+		console.error(err);
+		res.status(401).json({ message: 'Invalid token' });
+	}
+};
+
 function ensureAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {
 		return next();
 	} else {
-		passport.authenticate('jwt', {
-			session: false,
-		})(req, res, next);
+		passport.authenticate('jwt', { session: false })(req, res, () => {
+			// Call verifyToken middleware after the passport.authenticate callback
+			verifyToken(req, res, next);
+		});
 	}
 }
 
@@ -86,11 +119,7 @@ function ensureAuthenticated(req, res, next) {
 app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
 app.use('/auth', authRoutes);
-app.use('/profile/edit', ensureAuthenticated, editProfileRouter);
-app.get('/profile', ensureAuthenticated, (req, res) => {
-	res.send(`welcome ${req.user.name}`);
-	console.log(req.user._id);
-});
+app.use('/profile', ensureAuthenticated, editProfileRouter);
 
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');

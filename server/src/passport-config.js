@@ -1,4 +1,3 @@
-const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const bcrypt = require('bcryptjs');
 const User = require('./models/User');
@@ -8,6 +7,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const GitHubStrategy = require('passport-github').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 
 const options = {
 	secretOrKey: process.env.JWT_SECRET_KEY,

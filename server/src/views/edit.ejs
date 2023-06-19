@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Profile</title>
+</head>
+<body>
+  <h1>Edit Profile</h1>
+
+  <% if (user) { %>
+    <form action="/profile/edit" method="post">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" value="<%= user.name %>">
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" value="<%= user.email %>">
+      <label for="bio">Bio:</label>
+      <input type="text" id="bio" name="bio" value="<%= user.bio %>">
+      <label for="phone">Phone:</label>
+      <input type="number" id="phone" name="phone" value="<%= user.phone %>">
+
+      <input type="submit" value="Update Profile">
+    </form>
+  <% } else { %>
+    <p>Please log in to edit your profile.</p>
+  <% } %>
+</body>
+</html>
