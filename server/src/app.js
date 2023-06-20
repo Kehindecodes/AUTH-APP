@@ -79,42 +79,43 @@ app.use(passport.session());
 // 		})(req, res, next);
 // 	}
 // }
-// const verifyToken = (req, res, next) => {
-// 	// Retrieve the token from the server-side variable
-// 	const token = req.session.token;
-// 	console.log(token);
+const verifyToken = (req, res, next) => {
+	// Retrieve the token from the server-side variable
+	const token = req.session.token;
+	console.log(token);
 
-// 	if (!token) {
-// 		return res.status(401).json({ message: 'Unauthorized' });
-// 	}
+	if (!token) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
 
-// 	try {
-// 		// Verify and decode the token
-// 		const decodedToken = jwt.verify(token, secretKey);
-// 		console.log(decodedToken);
+	try {
+		// Verify and decode the token
+		const decodedToken = jwt.verify(token, secretKey);
+		console.log(decodedToken);
 
-// 		// Attach the decoded token to the request object
-// 		req.user = decodedToken;
-// 		console.log(req.user);
+		// Attach the decoded token to the request object
+		req.user = decodedToken;
+		console.log(req.user);
 
-// 		next();
-// 	} catch (err) {
-// 		// Handle any error that occurs during token verification
-// 		console.error(err);
-// 		res.status(401).json({ message: 'Invalid token' });
-// 	}
-// };
+		next();
+	} catch (err) {
+		// Handle any error that occurs during token verification
+		console.error(err);
+		res.status(401).json({ message: 'Invalid token' });
+	}
+};
 
-// function ensureAuthenticated(req, res, next) {
-// 	if (req.isAuthenticated()) {
-// 		return next();
-// 	} else {
-// 		passport.authenticate('jwt', { session: false })(req, res, () => {
-// 			// Call verifyToken middleware after the passport.authenticate callback
-// 			verifyToken(req, res, next);
-// 		});
-// 	}
-// }
+function ensureAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) {
+		return next();
+	} else {
+		passport.authenticate('jwt', { session: false })(req, res, () => {
+			// Call verifyToken middleware after the passport.authenticate callback
+			console.log(req.user);
+			next();
+		});
+	}
+}
 function checkLoggedIn(req, res, next) {
 	// check if user is authenticated
 	const isLoggedIn = req.isAuthenticated() && req.user;
@@ -131,7 +132,7 @@ function checkLoggedIn(req, res, next) {
 app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
 app.use('/auth', authRoutes);
-app.use('/profile', checkLoggedIn, editProfileRouter);
+app.use('/profile', ensureAuthenticated, editProfileRouter);
 
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
