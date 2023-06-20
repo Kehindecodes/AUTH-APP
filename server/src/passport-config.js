@@ -50,7 +50,7 @@ const localStrategy = new LocalStrategy(
 	},
 );
 
-const strategy = new Strategy(options, (payload, done) => {
+const JWTStrategy = new Strategy(options, (payload, done) => {
 	User.findById(payload.sub)
 		.then((user) => {
 			if (user) {
@@ -186,7 +186,7 @@ const facebookStrategy = new FacebookStrategy(
 );
 module.exports = {
 	localStrategy,
-	strategy,
+	JWTStrategy,
 	googleStrategy,
 	gitHubStrategy,
 	facebookStrategy,

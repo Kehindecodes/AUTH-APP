@@ -5,13 +5,14 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const User = require('../../models/User');
+const { trusted } = require('mongoose');
 
 function loginUser(req, res, next) {
 	passport.authenticate(
 		'local',
 		{ session: false },
 		(err, authenticatedUser, info) => {
-			console.log(authenticatedUser);
+			console.log(`here is the user ${authenticatedUser}`);
 			if (err) {
 				return res.status(500).json({ error: 'Internal Server Error' });
 			}
@@ -25,17 +26,23 @@ function loginUser(req, res, next) {
 
 			const user = authenticatedUser; // Assign the authenticated user to the `user` variable
 
-			const payload = { sub: user._id };
-			const secretKey = process.env.JWT_SECRET_KEY;
-			const token = jwt.sign(payload, secretKey, {
-				expiresIn: '1h',
-			});
+			// const payload = { sub: user._id };
+			// const secretKey = process.env.JWT_SECRET_KEY;
+			// const token = jwt.sign(payload, secretKey, {
+			// 	expiresIn: '1h',
+			// });
 
-			// Store the token in a server-side variable
-			req.session.token = token;
-			console.log(req.session.token);
-			// Redirect the user to the desired page upon successful authentication
-			res.redirect('/profile');
+			// // Store the token in a server-side variable
+			// req.session.token = token;
+			// console.log(req.session.token);
+			// // Redirect the user to the desired page upon successful authentication
+			req.login(user, (err) => {
+				if (err) {
+					return next(err);
+				}
+				res.redirect('/profile');
+				console.log('login successful');
+			});
 		},
 	)(req, res, next);
 }

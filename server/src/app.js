@@ -9,9 +9,9 @@ const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
 const authRoutes = require('./routes/auth');
 const editProfileRouter = require('./routes/profile/profile.router');
-
+const User = require('./models/User');
 const {
-	strategy,
+	JWTStrategy,
 	googleStrategy,
 	gitHubStrategy,
 	facebookStrategy,
@@ -21,7 +21,7 @@ require('dotenv').config();
 const secretKey = process.env.JWT_SECRET_KEY;
 
 passport.use(localStrategy);
-passport.use(strategy);
+passport.use(JWTStrategy);
 passport.use(googleStrategy);
 passport.use(gitHubStrategy);
 passport.use(facebookStrategy);
@@ -32,12 +32,11 @@ passport.serializeUser((user, done) => {
 });
 
 // read the session from the cookie
+
 passport.deserializeUser((user, done) => {
-	// User.findById(id).then(user=>{
-	// 	done(null, user)
-	// })
 	done(null, user);
 });
+
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -80,46 +79,59 @@ app.use(passport.session());
 // 		})(req, res, next);
 // 	}
 // }
-const verifyToken = (req, res, next) => {
-	// Retrieve the token from the server-side variable
-	const token = req.session.token;
-	console.log(token);
+// const verifyToken = (req, res, next) => {
+// 	// Retrieve the token from the server-side variable
+// 	const token = req.session.token;
+// 	console.log(token);
 
-	if (!token) {
-		return res.status(401).json({ message: 'Unauthorized' });
-	}
+// 	if (!token) {
+// 		return res.status(401).json({ message: 'Unauthorized' });
+// 	}
 
-	try {
-		// Verify and decode the token
-		const decodedToken = jwt.verify(token, secretKey);
+// 	try {
+// 		// Verify and decode the token
+// 		const decodedToken = jwt.verify(token, secretKey);
+// 		console.log(decodedToken);
 
-		// Attach the decoded token to the request object
-		req.user = decodedToken;
+// 		// Attach the decoded token to the request object
+// 		req.user = decodedToken;
+// 		console.log(req.user);
 
-		next();
-	} catch (err) {
-		// Handle any error that occurs during token verification
-		console.error(err);
-		res.status(401).json({ message: 'Invalid token' });
-	}
-};
+// 		next();
+// 	} catch (err) {
+// 		// Handle any error that occurs during token verification
+// 		console.error(err);
+// 		res.status(401).json({ message: 'Invalid token' });
+// 	}
+// };
 
-function ensureAuthenticated(req, res, next) {
-	if (req.isAuthenticated()) {
-		return next();
-	} else {
-		passport.authenticate('jwt', { session: false })(req, res, () => {
-			// Call verifyToken middleware after the passport.authenticate callback
-			verifyToken(req, res, next);
+// function ensureAuthenticated(req, res, next) {
+// 	if (req.isAuthenticated()) {
+// 		return next();
+// 	} else {
+// 		passport.authenticate('jwt', { session: false })(req, res, () => {
+// 			// Call verifyToken middleware after the passport.authenticate callback
+// 			verifyToken(req, res, next);
+// 		});
+// 	}
+// }
+function checkLoggedIn(req, res, next) {
+	// check if user is authenticated
+	const isLoggedIn = req.isAuthenticated() && req.user;
+	console.log(req.isAuthenticated());
+	if (!isLoggedIn) {
+		return res.status(401).json({
+			error: 'You must log in',
 		});
 	}
+	next();
 }
 
 // routes
 app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
 app.use('/auth', authRoutes);
-app.use('/profile', ensureAuthenticated, editProfileRouter);
+app.use('/profile', checkLoggedIn, editProfileRouter);
 
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
