@@ -24,43 +24,56 @@
   <a href="/auth/twitter">Twitter</a>
 </body>
 <!-- Add this script tag in your EJS template -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jsonwebtoken/8.5.1/jsonwebtoken.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsonwebtoken/8.5.1/jsonwebtoken.min.js"></script>
 <!-- Add this script tag after including the jsonwebtoken library -->
-<!-- <script>
-  document.getElementById('loginForm').addEventListener('submit', function (event) {
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    // Retrieve email and password from the form
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Send an AJAX request to the login route
     fetch('/auth/login', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password })
     })
-      .then(response => response.json())
-      .then(data => {
-        // Check if login was successful
-        if (data.token) {
-          // Store the JWT token in local storage or a cookie
-          localStorage.setItem('token', data.token);
+    .then(response => response.json())
+    .then(data => {
+      if (data.token) {
+        // Store the token in local storage or a cookie
+        localStorage.setItem('token', data.token);
 
-          // Redirect to the profile page or perform any other action
-          window.location.href = '/profile';
-        } else {
-          // Display an error message to the user
-          alert('Login failed. Please try again.');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-      });
+        // Include the token in the request headers for subsequent requests
+        const token = data.token;
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+
+        // Make a request to a protected route using the token in the headers
+        fetch('/profile', {
+          headers: headers
+        })
+        .then(response => {
+          // Handle the response from the protected route
+          // You can redirect to the profile page or display the data
+          window.location.href = '/profile'
+
+        })
+        .catch(error => {
+          console.error('Profile request error:', error);
+        });
+      } else {
+        // Handle login failure
+        alert(data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Login error:', error);
+    });
   });
-</script>  -->
-
+</script>
 </html>
