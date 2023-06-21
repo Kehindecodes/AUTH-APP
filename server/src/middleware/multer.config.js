@@ -2,7 +2,7 @@ const multer = require('multer');
 // Set up storage for uploaded files
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, '../uploads'); // Set the destination folder for uploaded files
+		cb(null, '../uploads/'); // Set the destination folder for uploaded files
 	},
 	filename: (req, file, cb) => {
 		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

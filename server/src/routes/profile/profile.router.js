@@ -1,6 +1,7 @@
 const express = require('express');
 const { editProfile, uploadImage } = require('./profile.controller');
-const upload = require('../../middleware/multer.config');
+const multer = require('multer');
+const upload = multer({ dest: '../../../uploads/' });
 
 const editProfileRouter = express.Router();
 

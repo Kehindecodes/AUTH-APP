@@ -11,7 +11,6 @@ const authRoutes = require('./routes/auth');
 const editProfileRouter = require('./routes/profile/profile.router');
 const forgotPasswordRouter = require('./routes/forgot-password/forgotPassword.route');
 const resetPasswordRouter = require('./routes/reset-password/resetPassword.route');
-
 const {
 	JWTStrategy,
 	googleStrategy,

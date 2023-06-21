@@ -1,4 +1,14 @@
 const User = require('../../models/User');
+// const cloudinary = require('../../cloudinary.setup');
+
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
+
+cloudinary.config({
+	cloud_name: 'djto2ij0k',
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 async function editProfile(req, res, next) {
 	try {
@@ -28,33 +38,38 @@ async function editProfile(req, res, next) {
 }
 
 async function uploadImage(req, res) {
-	if (!req.file) {
-		return res.status(400).json({ error: 'No file uploaded' });
-	}
-
-	// Get the user ID from the authenticated user (you may have a different way of obtaining the user ID)
-	const userId = req.user.id;
-
-	try {
-		// Find the user by ID
-		const user = await User.findById(userId);
-
-		if (!user) {
-			return res.status(404).json({ error: 'User not found' });
+	const file = req.file;
+	console.log(file);
+	// Upload file to Cloudinary
+	cloudinary.uploader.upload(file.path, async (error, result) => {
+		if (error) {
+			console.error('Error uploading file to Cloudinary:', error);
+			return res.status(500).json({ error: 'Error uploading file' });
 		}
 
-		// Update the profileImage field with the file path
-		user.profileImage = req.file.path;
+		// Store the Cloudinary URL in the user's profileImg field
+		const imageUrl = result.secure_url;
+		const email = req.user.email;
 
-		// Save the updated user document
+		// Update the user's profileImg field in the database
+
+		const user = await User.findOne({
+			email,
+		});
+
+		console.log(user);
+		if (!user) {
+			return res.status(404).json({ error: 'user not found' });
+		}
+
+		user.profileImage = imageUrl;
+
+		// save to database
 		await user.save();
 
-		// Return a success response
-		res.json({ message: 'Profile image uploaded successfully' });
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ error: 'Internal server error' });
-	}
+		// Return the updated user object in the response
+		res.json({ message: 'Image uploaded successfully' });
+	});
 }
 
 module.exports = {
