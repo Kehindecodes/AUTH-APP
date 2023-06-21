@@ -9,6 +9,8 @@ const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
 const authRoutes = require('./routes/auth');
 const editProfileRouter = require('./routes/profile/profile.router');
+const forgotPasswordRouter = require('./routes/forgot-password/forgotPassword.route');
+const resetPasswordRouter = require('./routes/reset-password/resetPassword.route');
 const User = require('./models/User');
 const {
 	JWTStrategy,
@@ -133,7 +135,8 @@ app.use('/auth/register', registerUserRouter);
 app.use('/auth/login', loginUserRouter);
 app.use('/auth', authRoutes);
 app.use('/profile', ensureAuthenticated, editProfileRouter);
-
+app.use('/reset-password', resetPasswordRouter);
+app.use('/forgot-password', forgotPasswordRouter);
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
 });
