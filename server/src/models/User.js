@@ -16,6 +16,14 @@ const userSchema = new mongoose.Schema({
 	},
 	bio: String,
 	phone: Number,
+	resetToken: {
+		type: String,
+		default: null,
+	},
+	resetTokenExpiration: {
+		type: Date,
+		default: null,
+	},
 });
 
 const User = mongoose.model('User', userSchema);
