@@ -1,6 +1,6 @@
 const express = require('express');
-
-const { editProfile } = require('./profile.controller');
+const { editProfile, uploadImage } = require('./profile.controller');
+const upload = require('../../middleware/multer.config');
 
 const editProfileRouter = express.Router();
 
@@ -15,5 +15,11 @@ editProfileRouter.post('/edit', editProfile);
 editProfileRouter.get('/edit', (req, res) => {
 	res.render('edit', { user: req.user });
 });
+
+editProfileRouter.post(
+	'/upload-profile-image',
+	upload.single('profileImage'),
+	uploadImage,
+);
 
 module.exports = editProfileRouter;

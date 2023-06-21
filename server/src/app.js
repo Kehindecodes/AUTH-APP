@@ -11,7 +11,6 @@ const authRoutes = require('./routes/auth');
 const editProfileRouter = require('./routes/profile/profile.router');
 const forgotPasswordRouter = require('./routes/forgot-password/forgotPassword.route');
 const resetPasswordRouter = require('./routes/reset-password/resetPassword.route');
-const uploadImageRouter = require('./routes/image-upload/imageUpload.route');
 
 const {
 	JWTStrategy,
@@ -117,7 +116,6 @@ app.use('/auth', authRoutes);
 app.use('/profile', ensureAuthenticated, editProfileRouter);
 app.use('/reset-password', resetPasswordRouter);
 app.use('/forgot-password', forgotPasswordRouter);
-app.use('/upload-profile-image', uploadImageRouter);
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
 });
