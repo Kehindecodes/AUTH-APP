@@ -11,7 +11,8 @@ const authRoutes = require('./routes/auth');
 const editProfileRouter = require('./routes/profile/profile.router');
 const forgotPasswordRouter = require('./routes/forgot-password/forgotPassword.route');
 const resetPasswordRouter = require('./routes/reset-password/resetPassword.route');
-const User = require('./models/User');
+const uploadImageRouter = require('./routes/image-upload/imageUpload.route');
+
 const {
 	JWTStrategy,
 	googleStrategy,
@@ -20,6 +21,7 @@ const {
 	localStrategy,
 } = require('./passport-config');
 require('dotenv').config();
+
 const secretKey = process.env.JWT_SECRET_KEY;
 
 passport.use(localStrategy);
@@ -59,28 +61,6 @@ app.use(passport.session());
 // serve a static file
 // app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// function checkLoggedIn(req, res, next) {
-// 	// check if user is authenticated
-// 	console.log(req.user);
-// 	const isLoggedIn = req.isAuthenticated() && req.user;
-
-// 	if (!isLoggedIn) {
-// 		return res.status(401).json({
-// 			error: 'You must log in',
-// 		});
-// 	}
-// 	next();
-// }
-
-// function ensureAuthenticated(req, res, next) {
-// 	if (req.isAuthenticated()) {
-// 		return next();
-// 	} else {
-// 		passport.authenticate('jwt', {
-// 			session: false,
-// 		})(req, res, next);
-// 	}
-// }
 const verifyToken = (req, res, next) => {
 	// Retrieve the token from the server-side variable
 	const token = req.session.token;
@@ -137,6 +117,7 @@ app.use('/auth', authRoutes);
 app.use('/profile', ensureAuthenticated, editProfileRouter);
 app.use('/reset-password', resetPasswordRouter);
 app.use('/forgot-password', forgotPasswordRouter);
+app.use('/upload-profile-image', uploadImageRouter);
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
 });
