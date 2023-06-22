@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
 		type: Date,
 		default: null,
 	},
+	secretKey: {
+		type: String,
+		default: null,
+	},
 });
 
 const User = mongoose.model('User', userSchema);
