@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const editProfileRouter = require('./routes/profile/profile.router');
 const forgotPasswordRouter = require('./routes/forgot-password/forgotPassword.route');
 const resetPasswordRouter = require('./routes/reset-password/resetPassword.route');
+const User = require('./models/User');
 const {
 	JWTStrategy,
 	googleStrategy,
@@ -18,6 +19,7 @@ const {
 	facebookStrategy,
 	localStrategy,
 } = require('./passport-config');
+const otpRouter = require('./routes/otpVerification');
 require('dotenv').config();
 
 const secretKey = process.env.JWT_SECRET_KEY;
@@ -30,13 +32,17 @@ passport.use(facebookStrategy);
 
 // save the session to the cookie
 passport.serializeUser((user, done) => {
-	done(null, user);
+	done(null, user._id);
 });
 
 // read the session from the cookie
-
-passport.deserializeUser((user, done) => {
-	done(null, user);
+passport.deserializeUser(async (id, done) => {
+	try {
+		const user = await User.findById(id);
+		done(null, user);
+	} catch (err) {
+		done(err);
+	}
 });
 
 const app = express();
@@ -115,6 +121,7 @@ app.use('/auth', authRoutes);
 app.use('/profile', ensureAuthenticated, editProfileRouter);
 app.use('/reset-password', resetPasswordRouter);
 app.use('/forgot-password', forgotPasswordRouter);
+app.use('/verify', otpRouter);
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
 });

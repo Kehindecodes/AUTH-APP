@@ -9,7 +9,7 @@
   
   <% if (user) { %>
     <% if (user.profileImage) { %>
-      <img src="<%= user.profileImage %>" alt="Profile Image">
+      <img src="<%= user.profileImage %>" alt="Profile Image" width="100" height="100">
     <% } %>
     <form action="/profile/upload-profile-image" method="POST" enctype="multipart/form-data">
       <input type="file" name="profileImage">
