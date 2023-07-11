@@ -3,7 +3,6 @@ import {
 	Box,
 	Center,
 	Heading,
-	Icon,
 	Image,
 	Input,
 	Text,
@@ -13,17 +12,31 @@ import {
 	InputGroup,
 	Button,
 } from '@chakra-ui/react';
-import { LockIcon, EmailIcon } from '@chakra-ui/icons';
+import {
+	LockIcon,
+	EmailIcon,
+	ViewIcon,
+	ViewOffIcon,
+	Icon,
+} from '@chakra-ui/icons';
 import logo from '../assets/devchallenges.svg';
+import {
+	FaSquareFacebook,
+	FaTwitter,
+	FaGoogle,
+	FaGithub,
+} from 'react-icons/fa6';
 
 const FormComponent = ({ handleClick, show, loginState }) => {
 	return (
 		<Box
 			w='473.831px'
-			h='550px'
+			// h='650px'
 			border='1px'
 			borderColor='#BDBDBD'
 			borderRadius='24px'
+			mt='6rem'
+			mb='3rem'
 			py='43px'
 			px='57px'>
 			<Box>
@@ -74,8 +87,8 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 								h='1.75rem'
 								size='sm'
 								onClick={handleClick}
-								color='gray.300'>
-								{show ? 'Hide' : 'Show'}
+								color='gray.400'>
+								{show ? <ViewOffIcon /> : <ViewIcon />}
 							</Button>
 						</InputRightElement>
 					</InputGroup>
@@ -87,6 +100,80 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 						Start Coding Now
 					</Button>
 				</Stack>
+				<Box my='2rem'>
+					<Text
+						color='#828282'
+						fontFamily='heading'
+						fontWeight='400'
+						fontSize='0.875rem'
+						textAlign={'center'}>
+						{' '}
+						or continue with these social profile
+					</Text>
+
+					<Box display='flex' mt='2rem'>
+						<Box
+							border='1px'
+							borderRadius='100%'
+							borderColor='#828282'
+							p='1rem'
+							ml='1rem'>
+							<Center>
+								<Icon
+									as={FaGoogle}
+									w='1.125rem'
+									h='1.09756rem'
+									color='#828282'
+								/>
+							</Center>
+						</Box>
+						<Box
+							border='1px'
+							borderRadius='100%'
+							borderColor='#828282'
+							p='1rem'
+							ml='1rem'>
+							<Center>
+								<Icon
+									as={FaSquareFacebook}
+									w='1.125rem'
+									h='1.09756rem'
+									color='#828282'
+								/>
+							</Center>
+						</Box>
+						<Box
+							border='1px'
+							borderRadius='100%'
+							borderColor='#828282'
+							p='1rem'
+							ml='1rem'>
+							<Center>
+								<Icon
+									as={FaTwitter}
+									w='1.125rem'
+									h='1.09756rem'
+									color='#828282'
+								/>
+							</Center>
+						</Box>
+						<Box
+							border='1px'
+							borderRadius='100%'
+							borderColor='#828282'
+							p='1rem'
+							ml='1rem'>
+							<Center>
+								<Icon
+									as={FaGithub}
+									w='1.125rem'
+									h='1.09756rem'
+									color='#828282'
+								/>
+							</Center>
+						</Box>
+					</Box>
+				</Box>
 			</Box>
 		</Box>
 	);
