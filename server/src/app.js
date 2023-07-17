@@ -4,6 +4,7 @@ const cookieSession = require('cookie-session');
 const path = require('path');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 // const cookieParser = require('cookie-parser');
 const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
@@ -46,6 +47,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 const app = express();
+app.use(cors());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
