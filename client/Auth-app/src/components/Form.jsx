@@ -30,7 +30,20 @@ import {
 } from 'react-icons/fa6';
 import { Link as LoginLink } from "react-router-dom";
 
-const FormComponent = ({ handleClick, show, loginState }) => {
+const FormComponent = ({ handleClick, show, loginState,onSubmit}) => {
+	const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSubmit(email, password); // Pass the email and password to the onSubmit function
+  };
 	return (
 		<Box
 			w='473.831px'
@@ -41,7 +54,7 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 			mt='2rem'
 			mb='3rem'
 			py='43px'
-			px='57px'>
+			px='57px' >
 			<Box>
 				<Image src={logo} />
 			</Box>
@@ -73,13 +86,13 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 				</Box>
 			)}
 
-			<Box as='form' my='2rem'>
+			<Box as='form' my='2rem' onSubmit={handleSubmit}>
 				<Stack spacing={4}>
 					<InputGroup border={1} borderColor='#BDBDBD' borderRadius={8}>
 						<InputLeftElement pointerEvents='none'>
 							<EmailIcon color='gray.300' />
 						</InputLeftElement>
-						<Input type='email' placeholder='Email' />
+						<Input type='email' placeholder='Email' onChange={handleEmailChange} />
 					</InputGroup>
 
 					<InputGroup border={1} borderColor='#BDBDBD' borderRadius={8}>
@@ -90,6 +103,7 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 							pr='4.5rem'
 							type={show ? 'text' : 'password'}
 							placeholder='Enter password'
+							onChange={handlePasswordChange}
 						/>
 						<InputRightElement width='4.5rem'>
 							<Button
@@ -106,7 +120,9 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 						borderRadius={8}
 						colorScheme='#2F80ED'
 						bgColor='#2F80ED'
-						fontFamily='body'>
+						fontFamily='body'
+						type='submit'
+						>
 						Start Coding Now
 					</Button>
 				</Stack>
