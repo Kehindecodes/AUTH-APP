@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react'
 import {
 	Box,
 	Center,
@@ -16,19 +16,17 @@ import {
 import { LockIcon, EmailIcon } from '@chakra-ui/icons';
 import logo from '../assets/devchallenges.svg';
 import FormComponent from '../components/Form';
-
-const RegisterPage = () => {
-	const [formData, setFormData] = useState({
+const LoginPage = () => {
+    const [formData, setFormData] = useState({
 		email: '',
 		password: '',
 	});
 	const [show, setShow] = useState(false);
 	const handleClick = () => setShow(!show);
-
-	return (
-		<Box
-			bg='#fff'
-			// height=''
+  return (
+    <Box
+        bg='#fff'
+			height='100vh'
 			width='100%'
 			display='flex'
 			justifyContent='center'
@@ -37,11 +35,11 @@ const RegisterPage = () => {
 				<FormComponent
 					handleClick={handleClick}
 					show={show}
-					loginState={false}
+					loginState={true}
 				/>
 			</Center>
-		</Box>
-	);
-};
+    </Box>
+  )
+}
 
-export default RegisterPage;
+export default LoginPage

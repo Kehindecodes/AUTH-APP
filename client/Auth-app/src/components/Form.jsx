@@ -11,6 +11,8 @@ import {
 	InputRightElement,
 	InputGroup,
 	Button,
+	Flex,
+	Link
 } from '@chakra-ui/react';
 import {
 	LockIcon,
@@ -26,26 +28,33 @@ import {
 	FaGoogle,
 	FaGithub,
 } from 'react-icons/fa6';
+import { Link as LoginLink } from "react-router-dom";
 
 const FormComponent = ({ handleClick, show, loginState }) => {
 	return (
 		<Box
 			w='473.831px'
-			// h='650px'
+			 h={  loginState?'544.372px' :'650px'  }
 			border='1px'
 			borderColor='#BDBDBD'
 			borderRadius='24px'
-			mt='6rem'
+			mt='2rem'
 			mb='3rem'
 			py='43px'
 			px='57px'>
 			<Box>
-				<Icon as={logo} boxSize='0.15319rem' h='0.14294rem' />
+				<Image src={logo} />
 			</Box>
 			{loginState ? (
-				<Text color='#333' fontFamily='body' fontWeight='400' fontSize='16px'>
+				<Heading
+				as='h2'
+				color='#333'
+				fontFamily='heading'
+				fontSize='18px'
+				fontWeight='600'
+				my='1.5rem'>
 					Login
-				</Text>
+					</Heading>
 			) : (
 				<Box>
 					<Heading
@@ -95,6 +104,7 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 					<Button
 						color='#fff'
 						borderRadius={8}
+						colorScheme='#2F80ED'
 						bgColor='#2F80ED'
 						fontFamily='body'>
 						Start Coding Now
@@ -111,7 +121,8 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 						or continue with these social profile
 					</Text>
 
-					<Box display='flex' mt='2rem'>
+					<Flex  mt='2rem' justify='center' >
+					  
 						<Box
 							border='1px'
 							borderRadius='100%'
@@ -172,8 +183,30 @@ const FormComponent = ({ handleClick, show, loginState }) => {
 								/>
 							</Center>
 						</Box>
-					</Box>
+						
+					</Flex>
 				</Box>
+				{loginState? <Text
+						color='#828282'
+						fontFamily='heading'
+						fontWeight='400'
+						fontSize='0.875rem'
+						textAlign={'center'}>
+						{' '}
+						
+						Don't have an account yet ? <Link as={LoginLink} to='/' color='#2D9CDB'>Register</Link>
+					</Text> : <Text
+						color='#828282'
+						fontFamily='heading'
+						fontWeight='400'
+						fontSize='0.875rem'
+						textAlign={'center'}>
+						{' '}
+						
+						Already a member ? <Link as={LoginLink} to='/login' color='#2D9CDB'>Login</Link>
+					</Text>
+				}
+				
 			</Box>
 		</Box>
 	);

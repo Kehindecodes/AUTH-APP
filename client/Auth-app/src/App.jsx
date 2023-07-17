@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
 	return (
 		<div className='App'>
 			<BrowserRouter>
 				<Routes>
-					{/* <Route exact path='/login' element={LoginPage} /> */}
+					<Route exact path='/login' element={<LoginPage/>} />
 					<Route exact path='/' element={<RegisterPage />} />
 					{/* <Route exact path='/request-otp' element={RequestOTPPage} />
 					<Route exact path='/otp-verification' element={OTPVerificationPage} />
