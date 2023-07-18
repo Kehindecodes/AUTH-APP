@@ -8,33 +8,33 @@ const User = require('../../models/User');
 const { generateOTP, sendOTPViaEmail } = require('../../middleware/otp');
 
 function loginUser(req, res, next) {
-	passport.authenticate(
-		'local',
-		{ session: false },
-		(err, authenticatedUser, info) => {
+	passport.authenticate('local', { session: false }, (err, user, info) => {
+		if (err) {
+			return res.status(500).json({ error: 'Internal Server Error' });
+		}
+
+		if (!user) {
+			return res.status(401).json({
+				message: info && info.message ? info.message : 'Authentication failed',
+			});
+		}
+
+		req.logIn(user, (err) => {
 			if (err) {
 				return res.status(500).json({ error: 'Internal Server Error' });
 			}
 
-			if (!authenticatedUser) {
-				return res.status(401).json({
-					message:
-						info && info.message ? info.message : 'Authentication failed',
-				});
-			}
-
-			const user = authenticatedUser; // Assign the authenticated user to the `user` variable
-			console.log(user);
 			const otp = generateOTP();
 			req.session.otp = otp; // Store the OTP in the session
 			req.session.user = user;
+			console.log(user);
 			console.log(otp);
 			// send otp to user's address
 			sendOTPViaEmail(user.email, otp);
 			// Redirect the user to the OTP verification page
 			res.json({ redirectTo: '/verify' });
-		},
-	)(req, res, next);
+		});
+	})(req, res, next);
 }
 
 function verifyOTP(req, res, next) {
@@ -54,7 +54,7 @@ function verifyOTP(req, res, next) {
 		});
 
 		// Send the token back to the client
-		res.json({ token });
+		res.json({ token: token });
 	} else {
 		// Invalid OTP, display an error message
 		res.status(401).json({ message: 'Invalid OTP' });
