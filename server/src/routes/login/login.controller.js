@@ -38,7 +38,7 @@ function loginUser(req, res, next) {
 }
 
 function verifyOTP(req, res, next) {
-	const enteredOTP = req.body.otp; // Get the entered OTP from the request body
+	const enteredOTP = req.body.theOTP; // Get the entered OTP from the request body
 	const storedOTP = req.session.otp; // Get the stored OTP from the session
 	const user = req.session.user;
 	console.log(enteredOTP);
@@ -46,13 +46,13 @@ function verifyOTP(req, res, next) {
 	if (enteredOTP === storedOTP) {
 		// OTP is valid, generate JWT token
 		// Assuming the authenticated user is stored in req.user
-		console.log(user);
 		const payload = { sub: user._id };
 		const secretKey = process.env.JWT_SECRET_KEY;
 		const token = jwt.sign(payload, secretKey, {
 			expiresIn: '1h',
 		});
 
+		console.log('user successfully verified');
 		// Send the token back to the client
 		res.json({ token: token });
 	} else {

@@ -8,8 +8,10 @@ const VerifyOTP = () => {
     
     const handleOTPVerification = async (event) => {
       event.preventDefault();
+	  const theOTP = Number(otp);
+	  console.log(theOTP);
       try {
-        const response = await axios.post('/verify', { otp }, { withCredentials: true });
+        const response = await axios.post('/verify', {theOTP},);
   
         if (response.status === 200) {
           console.log('OTP is verified successfully');
