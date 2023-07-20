@@ -2,20 +2,8 @@ import {useState} from 'react'
 import {
 	Box,
 	Center,
-	Heading,
-	Icon,
-	Image,
-	Input,
-	Text,
-	Stack,
-	InputLeftElement,
-	InputRightElement,
-	InputGroup,
-	Button,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { LockIcon, EmailIcon } from '@chakra-ui/icons';
-import logo from '../assets/devchallenges.svg';
 import FormComponent from '../components/Form';
 import { useNavigate } from 'react-router-dom';
 const LoginPage = () => {
@@ -25,7 +13,7 @@ const LoginPage = () => {
 	const handleSubmit = async (email,password) => {
 	
 		try {
-		  const response = await axios.post('http://127.0.0.1:8080/auth/login', { email, password });
+		  const response = await axios.post('/auth/login', { email, password });
 	
 		  if (response.status === 200) {
 			console.log('User is logged in successfully');

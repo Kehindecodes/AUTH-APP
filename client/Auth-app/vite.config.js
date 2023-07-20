@@ -6,7 +6,11 @@ export default defineConfig({
 	plugins: [react()],
 	server: {
 		proxy: {
-			'/api': 'http://localhost:9000/',
+			'/api': 'http://localhost:8080/',
+		},
+		build: {
+			outDir: '../../server/public',
+			assetsDir: 'assets',
 		},
 	},
 });

@@ -2,19 +2,9 @@ import { useState } from 'react';
 import {
 	Box,
 	Center,
-	Heading,
-	Icon,
-	Image,
-	Input,
-	Text,
-	Stack,
-	InputLeftElement,
-	InputRightElement,
-	InputGroup,
-	Button,
+	
 } from '@chakra-ui/react';
-import { LockIcon, EmailIcon } from '@chakra-ui/icons';
-import logo from '../assets/devchallenges.svg';
+
 import FormComponent from '../components/Form';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -24,7 +14,7 @@ const RegisterPage = () => {
 	const navigate = useNavigate();
 	const handleSubmit = async(email, password) => {
 		try {
-			const response = await axios.post('http://127.0.0.1:8080/auth/register', { email, password });
+			const response = await axios.post('/auth/register', { email, password });
 			if (response.status === 200) {
 				console.log('User is registered successfully');
 				if (response.data.redirectTo) {
