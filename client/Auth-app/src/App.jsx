@@ -3,6 +3,7 @@ import './App.css';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import VerifyOTP from './pages/VerifyOTP';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
 	return (
@@ -12,9 +13,10 @@ function App() {
 					<Route exact path='/login' element={<LoginPage/>} />
 					<Route exact path='/' element={<RegisterPage />} />
 					<Route exact path='/verify' element={<VerifyOTP/>} />
+					<Route exact path='/profile' element={<ProfilePage/>} />
 					{/* <Route exact path='/request-otp' element={RequestOTPPage} />
 					
-					<Route exact path='/profile' element={ProfilePage} />
+					
 					<Route
 						exact
 						path='/profile/reset-password'
