@@ -6,7 +6,7 @@ const upload = multer({ dest: '../../../uploads/' });
 const editProfileRouter = express.Router();
 
 editProfileRouter.get('/', (req, res) => {
-	console.log(`welcome ${req.user.sub}`);
+	console.log(`welcome ${req.user.name}`);
 	res.json({ user: req.user });
 	// res.send(`welcome ${req.user.name}`);
 	// console.log(req.user._id);
