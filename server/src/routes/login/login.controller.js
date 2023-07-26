@@ -3,9 +3,9 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
 const User = require('../../models/User');
-const { generateOTP, sendOTPViaEmail } = require('../../middleware/otp');
+const generateJwt = require('../../utils/generateJwt');
+const { generateOTP, sendOTPViaEmail } = require('../../utils/otp');
 
 function loginUser(req, res, next) {
 	passport.authenticate('local', { session: false }, (err, user, info) => {
@@ -46,15 +46,15 @@ function verifyOTP(req, res, next) {
 	if (enteredOTP === storedOTP) {
 		// OTP is valid, generate JWT token
 		// Assuming the authenticated user is stored in req.user
-		const payload = { sub: user._id };
-		const secretKey = process.env.JWT_SECRET_KEY;
-		const token = jwt.sign(payload, secretKey, {
-			expiresIn: '1h',
-		});
+		generateJwt(res, user._id);
+
+		// const payload = { sub: user._id };
+		// const secretKey = process.env.JWT_SECRET_KEY;
+		// const token = jwt.sign(payload, secretKey, {
+		// 	expiresIn: '1h',
+		// });
 
 		console.log('user successfully verified');
-		// Send the token back to the client
-		res.json({ token: token });
 	} else {
 		// Invalid OTP, display an error message
 		res.status(401).json({ message: 'Invalid OTP' });
