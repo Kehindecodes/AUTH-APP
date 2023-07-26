@@ -13,6 +13,7 @@ const editProfileRouter = require('./routes/profile/profile.router');
 const forgotPasswordRouter = require('./routes/forgot-password/forgotPassword.route');
 const resetPasswordRouter = require('./routes/reset-password/resetPassword.route');
 const User = require('./models/User');
+const ensureAuthenticated = require('./middleware/authMiddleware');
 const {
 	JWTStrategy,
 	googleStrategy,
@@ -72,46 +73,6 @@ app.use(passport.initialize());
 
 app.use(passport.session());
 
-// serve a static file
-// app.use(express.static(path.join(__dirname, '..', 'public')));
-
-// const verifyToken = (req, res, next) => {
-// 	// Retrieve the token from the server-side variable
-// 	const token = req.session.token;
-// 	console.log(token);
-
-// 	if (!token) {
-// 		return res.status(401).json({ message: 'Unauthorized' });
-// 	}
-
-// 	try {
-// 		// Verify and decode the token
-// 		const decodedToken = jwt.verify(token, secretKey);
-// 		console.log(decodedToken);
-
-// 		// Attach the decoded token to the request object
-// 		req.user = decodedToken;
-// 		console.log(req.user);
-
-// 		next();
-// 	} catch (err) {
-// 		// Handle any error that occurs during token verification
-// 		console.error(err);
-// 		res.status(401).json({ message: 'Invalid token' });
-// 	}
-// };
-
-function ensureAuthenticated(req, res, next) {
-	if (req.isAuthenticated()) {
-		return next();
-	} else {
-		passport.authenticate('jwt', { session: false })(req, res, () => {
-			// Call verifyToken middleware after the passport.authenticate callback
-			console.log(req.user);
-			next();
-		});
-	}
-}
 // function checkLoggedIn(req, res, next) {
 // 	// check if user is authenticated
 // 	const isLoggedIn = req.isAuthenticated() && req.user;
