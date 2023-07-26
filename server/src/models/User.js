@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-import bcrypt from 'bcrypt';
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
 	_id: Number,

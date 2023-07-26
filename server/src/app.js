@@ -13,7 +13,7 @@ const editProfileRouter = require('./routes/profile/profile.router');
 const forgotPasswordRouter = require('./routes/forgot-password/forgotPassword.route');
 const resetPasswordRouter = require('./routes/reset-password/resetPassword.route');
 const User = require('./models/User');
-const ensureAuthenticated = require('./middleware/authMiddleware');
+const { ensureAuthenticated } = require('./middleware/authMiddleware');
 const {
 	JWTStrategy,
 	googleStrategy,

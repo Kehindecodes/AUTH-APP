@@ -1,6 +1,6 @@
 // Import necessary modules
 const express = require('express');
-const { verifyOTP } = require('./login/login.controller');
+const { verifyOTP } = require('../middleware/verifyOtp');
 
 const otpRouter = express.Router();
 
