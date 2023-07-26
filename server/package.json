@@ -11,7 +11,7 @@
     "cluster": "pm2 start src/server.js -i max"
   },
   "keywords": [],
-  "author": "",
+  "author": "Oki kehinde",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

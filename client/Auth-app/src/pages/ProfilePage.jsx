@@ -12,7 +12,7 @@ const ProfilePage = () => {
     }, []);
   return (
     <Box>
-        <Heading as={'h2'} color='#333' fontFamily='heading' fontSize='18px' fontWeight='600' my='1.5rem'> welcome to your  uer </Heading>
+        <Heading as={'h2'} color='#333' fontFamily='heading' fontSize='18px' fontWeight='600' my='1.5rem'> welcome to your {user.sub}</Heading>
     </Box>
   )
 }
