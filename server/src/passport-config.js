@@ -35,7 +35,7 @@ const localStrategy = new LocalStrategy(
 				});
 			}
 
-			const isPasswordValid = await bcrypt.compare(password, user.password);
+			const isPasswordValid = await user.matchPassword(password);
 
 			if (!isPasswordValid) {
 				return done(null, false, {
