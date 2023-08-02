@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
 	},
 	bio: String,
 	phone: Number,
+	refreshToken: {
+		type: String,
+		default: null,
+	},
 });
 // Match user entered password to hashed password in database
 userSchema.methods.matchPassword = async function (enteredPassword) {
