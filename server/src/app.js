@@ -5,7 +5,7 @@ const path = require('path');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-// const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const registerUserRouter = require('./routes/register/register.route');
 const loginUserRouter = require('./routes/login/login.route');
 const authRoutes = require('./routes/auth');
@@ -73,6 +73,8 @@ app.use(passport.initialize());
 
 app.use(passport.session());
 
+app.use(cookieParser());
+
 // function checkLoggedIn(req, res, next) {
 // 	// check if user is authenticated
 // 	const isLoggedIn = req.isAuthenticated() && req.user;
@@ -92,6 +94,7 @@ app.use('/auth', authRoutes);
 app.use('/profile', ensureAuthenticated, editProfileRouter);
 app.use('/reset-password', resetPasswordRouter);
 app.use('/forgot-password', forgotPasswordRouter);
+app.use('/refresh', require('./routes/refresh/refreshToken.route'));
 app.use('/verify', otpRouter);
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');

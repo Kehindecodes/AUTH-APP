@@ -26,7 +26,7 @@ async function registerUser(req, res) {
 		const user = new User({
 			_id: generateRandomId(),
 			email,
-			password: hash,
+			password: password,
 			// secretKey: generateSecretKey(),
 		});
 

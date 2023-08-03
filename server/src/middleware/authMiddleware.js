@@ -1,27 +1,31 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-
+require('dotenv').config();
 async function ensureAuthenticated(req, res, next) {
-	let token;
-	token = req.cookies.token;
+	const authHeader = req.headers['authorization'];
 	if (req.isAuthenticated()) {
 		return next();
 	} else {
-		if (token) {
+		if (authHeader) {
 			try {
-				const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-				req.user = await User.findById(decoded.userId).select('-password');
-
-				next();
+				console.log(authHeader);
+				const token = authHeader.split(' ')[1];
+				jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+					if (err) {
+						return res
+							.status(401)
+							.json({ message: 'Not authorized, token failed' });
+					}
+					req.user = decoded.userId;
+					next();
+				});
 			} catch (error) {
 				console.error(error);
-				res.status(401);
-				throw new Error('Not authorized, token failed');
+				return res
+					.status(401)
+					.json({ message: 'Not authorized, token failed' });
 			}
 		} else {
-			res.status(401);
-			throw new Error('Not authorized, no token');
+			return res.status(401).json({ message: 'Not authorized, no token' });
 		}
 	}
 }
