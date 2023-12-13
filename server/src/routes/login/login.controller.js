@@ -1,41 +1,30 @@
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const User = require('../../models/User');
-const generateJwt = require('../../utils/generateJwt');
-const { generateOTP, sendOTPViaEmail } = require('../../utils/otp');
+const passport = require('passport');
 
 function loginUser(req, res, next) {
-	passport.authenticate('local', { session: false }, (err, user, info) => {
+
+	const { email, password } = req.body;
+
+	if (!email) {
+		return res.status(400).json({ error: 'Email is required' });
+	}
+
+	if (!password) {
+		return res.status(400).json({ error: 'Password is required' });
+	}
+
+ passport.authenticate('local', (err, user, info) => {
 		if (err) {
-			return res.status(500).json({ error: 'Internal Server Error' });
+			return next(err);
 		}
-
 		if (!user) {
-			return res.status(401).json({
-				message: info && info.message ? info.message : 'Authentication failed',
-			});
+			return res.status(401).json(info);
 		}
-
-		req.logIn(user, (err) => {
-			if (err) {
-				return res.status(500).json({ error: 'Internal Server Error' });
-			}
-
-			const otp = generateOTP();
-			req.session.otp = otp; // Store the OTP in the session
-			req.session.user = user;
-			console.log(user);
-			console.log(otp);
-			// send otp to user's address
-			sendOTPViaEmail(user.email, otp);
-			// Redirect the user to the OTP verification page
-			res.json({ redirectTo: '/verify' });
-		});
-	})(req, res, next);
-}
+		
+		// return ok response
+		return res.status(200).json({ message: 'Login successful' });
+ } )(req, res, next);
+};
 
 module.exports = {
 	loginUser,

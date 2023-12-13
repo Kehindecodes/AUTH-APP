@@ -27,6 +27,7 @@ const localStrategy = new LocalStrategy(
 	},
 	async (email, password, done) => {
 		try {
+
 			const user = await User.findOne({ email });
 
 			if (!user) {
@@ -36,7 +37,7 @@ const localStrategy = new LocalStrategy(
 			}
 
 			const isPasswordValid = await user.matchPassword(password);
-			console.log(password);
+			// console.log(password);
 
 			if (!isPasswordValid) {
 				return done(null, false, {

@@ -16,8 +16,8 @@ const userSchema = new mongoose.Schema({
 	},
 	bio: String,
 	phone: Number,
-	refreshToken: {
-		type: String,
+	otp: {
+		type: Object,
 		default: null,
 	},
 });

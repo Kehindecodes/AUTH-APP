@@ -3,7 +3,6 @@ const passport = require('passport');
 const cookieSession = require('cookie-session');
 const path = require('path');
 const session = require('express-session');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const registerUserRouter = require('./routes/register/register.route');
@@ -21,7 +20,8 @@ const {
 	facebookStrategy,
 	localStrategy,
 } = require('./passport-config');
-const otpRouter = require('./routes/otpVerification');
+const otpRouter = require('./routes/otp/otpVerification');
+const generateOtpRouter = require('./routes/otp/generateOtp.route');
 require('dotenv').config();
 
 const secretKey = process.env.JWT_SECRET_KEY;
@@ -56,8 +56,8 @@ app.use(
 	}),
 );
 
-// app.set('view engine', 'ejs');
-// app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('./public'));
 app.use(express.json());
 app.use(
@@ -94,8 +94,8 @@ app.use('/auth', authRoutes);
 app.use('/profile', ensureAuthenticated, editProfileRouter);
 app.use('/reset-password', resetPasswordRouter);
 app.use('/forgot-password', forgotPasswordRouter);
-app.use('/refresh', require('./routes/refresh/refreshToken.route'));
 app.use('/verify', otpRouter);
+app.use ('/user/otp', generateOtpRouter)
 app.get('/failure', (req, res) => {
 	return res.send('failed to log in!');
 });
@@ -115,6 +115,7 @@ app.get('/auth/logout', (req, res) => {
 app.get('/', (req, res) => {
 	// res.send('I dey work jare');
 	// res.sendFile(path.join(__dirname, '../public', 'index.html'));
-	// res.render('index', { title: 'auth App', user: req.user });
+	res.render('index', { title: 'auth App', user: req.user });
+	res.render('verify');
 });
 module.exports = app;
